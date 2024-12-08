@@ -23,6 +23,14 @@ const sessionOptions = {
   resave: false,
   saveUninitialized: false,
 };
+// 添加环境变量支持
+const PORT = process.env.PORT || 4000;
+
+// 添加一个测试路由
+app.get("/", (req, res) => {
+  res.send("Welcome to Full Stack Development!");
+});
+
 
 app.use(session(sessionOptions));
 app.use(express.json());
@@ -43,6 +51,6 @@ EnrollmentRoutes(app);
 
 
 
-app.listen(4000, () => {
-  console.log("Server is running on port 4000");
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
