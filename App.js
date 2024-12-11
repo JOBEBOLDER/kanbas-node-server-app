@@ -1,71 +1,73 @@
+import "dotenv/config";
+
+import path from "path";
 import express from "express";
-import Hello from "./Hello.js";
-import Lab5 from "./Lab5/index.js";
-import cors from "cors";
 import session from "express-session";
 import mongoose from "mongoose";
-import "dotenv/config";
-import UserRoutes from "./Kanbas/Users/routes.js";
+import UserRoutes from "./Users/routes.js";
+import Hello from "./Hello.js";
+import Lab5 from "./Lab5.js";
+import cors from "cors";
 import CourseRoutes from "./Kanbas/Courses/routes.js";
+import ModuleRoutes from "./Kanbas/Modules/routes.js";
 import AssignmentRoutes from "./Kanbas/Assignments/routes.js";
-import EnrollmentRoutes from "./Kanbas/Enrollments/routes.js";
+import QuizRoutes from "./Kanbas/Quizzes/routes.js";
 
-const CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kanbas-cs5610-fall"
-mongoose.connect(CONNECTION_STRING);
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const CONNECTION_STRING =   process.env.DB_CONNECTION_STRING || "mongodb://localhost:27017/kanbas";
+const DB_NAME = process.env.DB_NAME;
+mongoose.connect(CONNECTION_STRING, { dbName: DB_NAME });
+console.log("Connecting to MongoDB at:", CONNECTION_STRING);
 
 const app = express();
+// serve static images
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
-// CORS配置必须在其他中间件之前
+
 app.use(
   cors({
+    // support cookies
     credentials: true,
-    origin: "http://localhost:3000",
-    optionsSuccessStatus: 200
-  })
+    // restrict cross origin resource sharing to the react application
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  }),
 );
+// make sure this statement occurs AFTER setting up CORS
+app.use(express.json());
+// configure server session after cors
+const sessionOptions = {
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+};
 
-// Session配置
-app.use(
-  session({
-    secret: "any string",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { 
-      secure: false,  // 开发环境设为false
-      sameSite: "lax",  
-      maxAge: 24 * 60 * 60 * 1000  // 24小时
-    }
-  })
-);
-
-// 解析JSON请求体
+if (process.env.NODE_ENV !== "development") {
+  sessionOptions.proxy = true;
+  sessionOptions.cookie = {
+    sameSite: "none",
+    secure: true,
+    // domain: "https://kanbas-quiz-node-server-smbz.onrender.com",
+  };
+}
+app.use(session(sessionOptions));
 app.use(express.json());
 
-// 基础路由
-app.get("/", (req, res) => {
-  res.send("Welcome to Full Stack Development!");
-});
-
-// API路由
-Lab5(app);
-Hello(app);
 UserRoutes(app);
 CourseRoutes(app);
+ModuleRoutes(app);
+QuizRoutes(app);
 AssignmentRoutes(app);
-EnrollmentRoutes(app);
+Lab5(app);
+Hello(app);
 
-// 错误处理中间件
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Something went wrong!" });
-});
-
-// 404处理
-app.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
-});
-
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(process.env.PORT || 4000, () => {
+  console.log('Server is running on port 4000');
 });

@@ -1,24 +1,16 @@
-let assignments = [];
-
-export const findAllAssignments = () => assignments;
+import model from "./model.js";
+import { ObjectId } from 'mongodb'; 
 
 export const createAssignment = (assignment) => {
-  assignment._id = new Date().getTime().toString();
-  assignments.push(assignment);
-  return assignment;
+    assignment.id = new ObjectId().toString();
+    delete assignment._id;
+    return model.create(assignment);
 };
 
-export const findAssignmentById = (id) => {
-  return assignments.find((assignment) => assignment._id === id);
-};
+export const findAllAssignments = () => model.find();
 
-export const updateAssignment = (id, assignment) => {
-  const index = assignments.findIndex((a) => a._id === id);
-  assignments[index] = { ...assignments[index], ...assignment };
-  return assignments[index];
-};
+export const findAssignmentsByCourse = (course) => model.find({ course: course });
 
-export const deleteAssignment = (id) => {
-  assignments = assignments.filter((assignment) => assignment._id !== id);
-  return { status: "OK" };
-};
+export const deleteAssignment = (assignmentId) => model.deleteOne({_id: assignmentId});
+
+export const updateAssignment = (assignmentId, assignment) => model.updateOne({_id: assignmentId}, {$set: assignment});

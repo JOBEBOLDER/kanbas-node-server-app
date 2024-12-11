@@ -1,16 +1,16 @@
 {
   "type": "module",
-  "name": "kanbas-node-server-app",
+  "name": "kanbas-quiz-node-server",
   "version": "1.0.0",
   "description": "Node.js HTTP Web server for the Kanbas application",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node App.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JOBEBOLDER/kanbas-react-web-app.git"
+    "url": "git+https://github.com/lilychan16/kanbas-node-server-app.git"
   },
   "keywords": [
     "Node",
@@ -19,21 +19,20 @@
     "HTTP",
     "Web",
     "Development",
-    "CS5610",
-    "CS4550"
+    "CS5610"
   ],
-  "author": "Jieyao Chen",
+  "author": "Chen Chen",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/JOBEBOLDER/kanbas-react-web-app/issues"
+    "url": "https://github.com/lilychan16/kanbas-node-server-app/issues"
   },
-  "homepage": "https://github.com/JOBEBOLDER/kanbas-react-web-app#readme",
+  "homepage": "https://github.com/lilychan16/kanbas-node-server-app#readme",
   "dependencies": {
+    "axios": "^1.6.8",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.1",
-    "express-session": "^1.18.1",
-    "mongodb": "^6.12.0",
-    "mongoose": "^8.8.4"
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "mongoose": "^8.3.1"
   }
 }
